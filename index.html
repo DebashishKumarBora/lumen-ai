@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lumen — Ask your data. Get decisions.</title>
+<meta name="description" content="Lumen is the AI analyst that connects your marketing stack, watches every metric, and answers in plain English — with the next move already figured out." />
+<meta property="og:title" content="Lumen — Ask your data. Get decisions." />
+<meta property="og:description" content="The AI analyst that turns messy marketing data into decisions, not dashboards." />
+<meta property="og:type" content="website" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%237C6CFF'/%3E%3Cstop offset='1' stop-color='%234FD7E8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='26' fill='%23090910'/%3E%3Ccircle cx='50' cy='50' r='26' fill='none' stroke='url(%23g)' stroke-width='8'/%3E%3Ccircle cx='50' cy='50' r='9' fill='%23FF8A5B'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#07070C; --ink2:#0B0B14; --panel:#0F1018;
+  --glass:rgba(255,255,255,.045); --glass-brd:rgba(255,255,255,.10); --glass-brd2:rgba(255,255,255,.16);
+  --iris:#7C6CFF; --aqua:#4FD7E8; --coral:#FF8A5B; --mint:#5CE7B0; --plum:#B06CFF;
+  --text:#ECEDF5; --muted:#9A9DB2; --faint:#5E6178;
+  --aurora:linear-gradient(110deg,var(--iris),var(--aqua) 52%,var(--coral));
+  --aurora-soft:linear-gradient(110deg,rgba(124,108,255,.16),rgba(79,215,232,.12),rgba(255,138,91,.14));
+  --display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --body:'Inter','Segoe UI',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --maxw:1180px; --r:18px; --r-sm:12px; --ease:cubic-bezier(.22,1,.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:90px;-webkit-text-size-adjust:100%}
+body{background:var(--ink);color:var(--text);font-family:var(--body);line-height:1.6;
+  overflow-x:hidden;-webkit-font-smoothing:antialiased;letter-spacing:-.01em}
+a{color:inherit;text-decoration:none}
+img,svg{display:block;max-width:100%}
+::selection{background:rgba(124,108,255,.35);color:#fff}
+:focus-visible{outline:2px solid var(--aqua);outline-offset:3px;border-radius:6px}
+
+/* ---------- atmosphere ---------- */
+.atmos{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none}
+.aurora{position:absolute;inset:-25%;
+  background:
+   radial-gradient(38% 50% at 18% 22%,rgba(124,108,255,.42),transparent 70%),
+   radial-gradient(34% 46% at 82% 28%,rgba(79,215,232,.32),transparent 70%),
+   radial-gradient(40% 50% at 65% 88%,rgba(255,138,91,.22),transparent 70%),
+   radial-gradient(30% 40% at 30% 80%,rgba(176,108,255,.22),transparent 70%);
+  filter:blur(40px);animation:drift 26s var(--ease) infinite alternate}
+@keyframes drift{
+  0%{transform:translate3d(-3%,-2%,0) scale(1.05)}
+  50%{transform:translate3d(4%,3%,0) scale(1.12)}
+  100%{transform:translate3d(-2%,4%,0) scale(1.06)}}
+.grain{position:absolute;inset:0;opacity:.5;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
+.grid-overlay{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:64px 64px;mask:radial-gradient(ellipse 90% 70% at 50% 0%,#000,transparent 75%)}
+
+/* ---------- layout ---------- */
+.wrap{max-width:var(--maxw);margin:0 auto;padding-left:24px;padding-right:24px}
+.section{padding:96px 0}
+.eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--aqua);display:inline-flex;align-items:center;gap:9px}
+.eyebrow::before{content:"";width:22px;height:1px;background:linear-gradient(90deg,var(--aqua),transparent)}
+.grad-text{background:var(--aurora);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+h1,h2,h3{font-family:var(--display);font-weight:700;line-height:1.04;letter-spacing:-.03em}
+.sec-head{max-width:680px;margin-bottom:54px}
+.sec-head h2{font-size:clamp(2rem,4.4vw,3.1rem);margin:18px 0 14px}
+.sec-head p{color:var(--muted);font-size:1.08rem;max-width:560px}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;gap:9px;font-family:var(--body);font-weight:600;font-size:.96rem;
+  padding:13px 22px;border-radius:999px;cursor:pointer;border:1px solid transparent;transition:.35s var(--ease);white-space:nowrap}
+.btn-primary{background:var(--aurora);color:#0a0a12;position:relative;
+  box-shadow:0 8px 30px -8px rgba(124,108,255,.6),inset 0 1px 0 rgba(255,255,255,.35)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 44px -10px rgba(124,108,255,.7)}
+.btn-ghost{background:var(--glass);color:var(--text);border-color:var(--glass-brd2);backdrop-filter:blur(8px)}
+.btn-ghost:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.32);background:rgba(255,255,255,.07)}
+.btn svg{width:17px;height:17px}
+
+/* ---------- nav ---------- */
+header{position:fixed;top:0;left:0;right:0;z-index:50;transition:.4s var(--ease)}
+header.scrolled{background:rgba(7,7,12,.72);backdrop-filter:blur(16px) saturate(1.4);border-bottom:1px solid var(--glass-brd)}
+nav{display:flex;align-items:center;justify-content:space-between;height:74px}
+.logo{display:flex;align-items:center;gap:11px;font-family:var(--display);font-weight:700;font-size:1.22rem;letter-spacing:-.04em}
+.logo .mark{width:30px;height:30px;border-radius:9px;background:var(--ink2);border:1px solid var(--glass-brd2);
+  display:grid;place-items:center;position:relative;box-shadow:0 0 22px -6px rgba(124,108,255,.7)}
+.logo .mark::before{content:"";width:13px;height:13px;border-radius:50%;border:2.5px solid;
+  border-image:var(--aurora) 1;border-radius:50%}
+.logo .mark::after{content:"";position:absolute;width:6px;height:6px;border-radius:50%;background:var(--coral)}
+.nav-links{display:flex;gap:34px;align-items:center}
+.nav-links a{color:var(--muted);font-size:.93rem;font-weight:500;transition:.25s}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{display:flex;align-items:center;gap:14px}
+.nav-cta .signin{color:var(--muted);font-size:.93rem;font-weight:500}
+.nav-cta .signin:hover{color:var(--text)}
+.burger{display:none;flex-direction:column;gap:5px;background:none;border:0;cursor:pointer;padding:8px}
+.burger span{width:22px;height:2px;background:var(--text);border-radius:2px;transition:.3s}
+.mobile-menu{display:none}
+
+/* ---------- hero ---------- */
+.hero{padding:150px 0 70px;text-align:center;position:relative}
+.badge{display:inline-flex;align-items:center;gap:10px;font-size:.82rem;font-weight:500;color:var(--muted);
+  background:var(--glass);border:1px solid var(--glass-brd);padding:7px 7px 7px 14px;border-radius:999px;margin-bottom:30px}
+.badge b{color:var(--text);font-weight:600}
+.badge .pin{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;background:var(--aurora);color:#0a0a12;
+  padding:4px 10px;border-radius:999px;font-weight:600}
+.hero h1{font-size:clamp(2.7rem,7vw,5.2rem);font-weight:800;max-width:14ch;margin:0 auto}
+.hero .sub{color:var(--muted);font-size:clamp(1.05rem,1.7vw,1.28rem);max-width:600px;margin:26px auto 38px;line-height:1.55}
+.hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.hero-note{margin-top:20px;font-size:.84rem;color:var(--faint)}
+
+/* ---------- console (signature) ---------- */
+.console-wrap{max-width:920px;margin:64px auto 0;perspective:1600px}
+.console{background:linear-gradient(180deg,rgba(20,21,32,.86),rgba(11,11,20,.9));
+  border:1px solid var(--glass-brd2);border-radius:22px;overflow:hidden;text-align:left;
+  box-shadow:0 50px 120px -40px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.03),0 0 80px -30px rgba(124,108,255,.5);
+  backdrop-filter:blur(10px);transform:rotateX(4deg);transform-origin:center top}
+.console-bar{display:flex;align-items:center;gap:8px;padding:14px 18px;border-bottom:1px solid var(--glass-brd)}
+.dot{width:11px;height:11px;border-radius:50%}
+.console-bar .title{margin-left:10px;font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+.console-bar .live{margin-left:auto;font-family:var(--mono);font-size:.68rem;letter-spacing:.15em;color:var(--mint);
+  display:flex;align-items:center;gap:7px}
+.console-bar .live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--mint);box-shadow:0 0 9px var(--mint);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.console-body{padding:24px;min-height:280px;display:flex;flex-direction:column;gap:16px}
+.chips{display:flex;gap:9px;flex-wrap:wrap}
+.chip{font-size:.84rem;color:var(--text);background:rgba(255,255,255,.05);border:1px solid var(--glass-brd2);
+  padding:8px 14px;border-radius:999px;cursor:pointer;transition:.25s;font-family:var(--body)}
+.chip:hover{background:rgba(124,108,255,.18);border-color:rgba(124,108,255,.5);transform:translateY(-1px)}
+.thread{display:flex;flex-direction:column;gap:14px}
+.bubble{max-width:88%;padding:13px 16px;border-radius:14px;font-size:.95rem;line-height:1.5;animation:rise .5s var(--ease) both}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}}
+.bubble.user{align-self:flex-end;background:var(--aurora);color:#0a0a12;font-weight:500;border-bottom-right-radius:4px}
+.bubble.ai{align-self:flex-start;background:rgba(255,255,255,.045);border:1px solid var(--glass-brd);border-bottom-left-radius:4px}
+.bubble.ai .who{font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;color:var(--aqua);text-transform:uppercase;margin-bottom:7px;display:flex;align-items:center;gap:7px}
+.bubble.ai .who .lm{width:13px;height:13px;border-radius:4px;background:var(--aurora)}
+.spark{margin-top:13px;background:rgba(0,0,0,.3);border:1px solid var(--glass-brd);border-radius:10px;padding:11px 13px}
+.spark .lab{font-family:var(--mono);font-size:.64rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.rec{margin-top:12px;display:flex;align-items:flex-start;gap:10px;background:rgba(92,231,176,.08);border:1px solid rgba(92,231,176,.28);
+  border-radius:10px;padding:11px 13px;font-size:.9rem}
+.rec .tag{font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;color:var(--mint);text-transform:uppercase;
+  background:rgba(92,231,176,.14);padding:4px 8px;border-radius:6px;white-space:nowrap;margin-top:1px}
+.console-input{display:flex;gap:10px;align-items:center;border-top:1px solid var(--glass-brd);padding:14px 18px}
+.console-input input{flex:1;background:rgba(0,0,0,.25);border:1px solid var(--glass-brd);border-radius:10px;
+  padding:11px 14px;color:var(--text);font-family:var(--body);font-size:.92rem;outline:none}
+.console-input input:focus{border-color:rgba(124,108,255,.5)}
+.console-input button{background:var(--aurora);border:0;width:40px;height:40px;border-radius:10px;cursor:pointer;display:grid;place-items:center;flex:0 0 auto}
+.console-input button svg{width:18px;height:18px;color:#0a0a12}
+.cursor-blink::after{content:"▍";color:var(--aqua);animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* ---------- logo cloud ---------- */
+.cloud{text-align:center;padding:30px 0 10px}
+.cloud p{font-family:var(--mono);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-bottom:24px}
+.cloud-row{display:flex;flex-wrap:wrap;justify-content:center;gap:18px 48px;align-items:center;opacity:.62}
+.cloud-row span{font-family:var(--display);font-weight:700;font-size:1.25rem;color:var(--muted);letter-spacing:-.02em}
+
+/* ---------- bento ---------- */
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:18px}
+.card{background:var(--glass);border:1px solid var(--glass-brd);border-radius:var(--r);padding:28px;position:relative;
+  overflow:hidden;transition:.4s var(--ease)}
+.card:hover{border-color:var(--glass-brd2);transform:translateY(-4px);background:rgba(255,255,255,.06)}
+.card .ico{width:44px;height:44px;border-radius:12px;background:var(--aurora-soft);border:1px solid var(--glass-brd2);
+  display:grid;place-items:center;margin-bottom:18px}
+.card .ico svg{width:22px;height:22px;color:var(--aqua)}
+.card h3{font-size:1.18rem;margin-bottom:9px;letter-spacing:-.02em}
+.card p{color:var(--muted);font-size:.95rem}
+.card.lg{grid-column:span 4} .card.sm{grid-column:span 2}
+.card.feat{grid-column:span 4;background:linear-gradient(135deg,rgba(124,108,255,.14),rgba(79,215,232,.06))}
+.card.feat .ico{background:rgba(255,138,91,.14)} .card.feat .ico svg{color:var(--coral)}
+/* mini viz inside feature card */
+.minibars{display:flex;align-items:flex-end;gap:7px;height:74px;margin-top:20px}
+.minibars i{flex:1;background:var(--aurora);border-radius:5px 5px 0 0;opacity:.85;transition:height 1.1s var(--ease)}
+
+/* ---------- steps ---------- */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;counter-reset:s}
+.step{background:var(--glass);border:1px solid var(--glass-brd);border-radius:var(--r);padding:30px 26px;position:relative}
+.step .n{font-family:var(--mono);font-size:.8rem;color:var(--coral);letter-spacing:.1em;margin-bottom:16px}
+.step h3{font-size:1.2rem;margin-bottom:8px} .step p{color:var(--muted);font-size:.95rem}
+.step:not(:last-child)::after{content:"→";position:absolute;right:-15px;top:50%;transform:translateY(-50%);color:var(--faint);z-index:2}
+
+/* ---------- metrics ---------- */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;
+  border-top:1px solid var(--glass-brd);border-bottom:1px solid var(--glass-brd);padding:50px 0}
+.metric{text-align:center}
+.metric .v{font-family:var(--display);font-weight:800;font-size:clamp(2.1rem,4vw,3rem);letter-spacing:-.03em}
+.metric .l{color:var(--muted);font-size:.9rem;margin-top:6px}
+
+/* ---------- testimonials ---------- */
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.tcard{background:var(--glass);border:1px solid var(--glass-brd);border-radius:var(--r);padding:28px;display:flex;flex-direction:column;gap:18px}
+.tcard p{font-size:1rem;line-height:1.6}
+.tcard .who{display:flex;align-items:center;gap:12px;margin-top:auto}
+.tcard .av{width:42px;height:42px;border-radius:50%;background:var(--aurora-soft);border:1px solid var(--glass-brd2);
+  display:grid;place-items:center;font-family:var(--display);font-weight:700;color:var(--text)}
+.tcard .who b{display:block;font-size:.92rem} .tcard .who span{font-size:.82rem;color:var(--muted)}
+.stars{color:var(--coral);font-size:.9rem;letter-spacing:2px}
+
+/* ---------- pricing ---------- */
+.toggle{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:40px;font-size:.92rem}
+.toggle .sw{width:52px;height:28px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid var(--glass-brd2);
+  position:relative;cursor:pointer;transition:.3s}
+.toggle .sw::after{content:"";position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:var(--aurora);transition:.3s var(--ease)}
+.toggle.year .sw::after{transform:translateX(24px)}
+.toggle .save{font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;color:var(--mint);background:rgba(92,231,176,.12);padding:4px 9px;border-radius:6px}
+.toggle .muted{color:var(--muted)} .toggle .on{color:var(--text);font-weight:600}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:start}
+.plan{background:var(--glass);border:1px solid var(--glass-brd);border-radius:var(--r);padding:32px 28px;position:relative}
+.plan.pop{border-color:rgba(124,108,255,.5);background:linear-gradient(180deg,rgba(124,108,255,.12),rgba(255,255,255,.03));
+  box-shadow:0 30px 70px -30px rgba(124,108,255,.5)}
+.plan .tier{font-family:var(--mono);font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.plan .pop-tag{position:absolute;top:-12px;right:24px;font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;
+  background:var(--aurora);color:#0a0a12;padding:5px 12px;border-radius:999px;font-weight:600}
+.plan .price{font-family:var(--display);font-weight:800;font-size:2.8rem;margin:16px 0 2px;letter-spacing:-.03em}
+.plan .price small{font-size:1rem;color:var(--muted);font-weight:400;font-family:var(--body)}
+.plan .pd{color:var(--muted);font-size:.9rem;margin-bottom:22px;min-height:40px}
+.plan ul{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:26px}
+.plan li{font-size:.92rem;display:flex;align-items:flex-start;gap:10px;color:var(--text)}
+.plan li svg{width:17px;height:17px;color:var(--mint);flex:0 0 auto;margin-top:3px}
+.plan .btn{width:100%;justify-content:center}
+
+/* ---------- faq ---------- */
+.faq{max-width:780px;margin:0 auto}
+.qa{border-bottom:1px solid var(--glass-brd)}
+.qa summary{cursor:pointer;padding:22px 4px;font-family:var(--display);font-weight:600;font-size:1.12rem;
+  list-style:none;display:flex;justify-content:space-between;gap:20px;align-items:center}
+.qa summary::-webkit-details-marker{display:none}
+.qa summary .pm{font-family:var(--body);font-weight:400;color:var(--aqua);font-size:1.5rem;transition:.3s;flex:0 0 auto}
+.qa[open] summary .pm{transform:rotate(45deg)}
+.qa .ans{padding:0 4px 24px;color:var(--muted);font-size:.98rem;line-height:1.65;max-width:90%}
+
+/* ---------- final cta ---------- */
+.final{position:relative;text-align:center;border:1px solid var(--glass-brd2);border-radius:30px;
+  padding:78px 32px;overflow:hidden;background:linear-gradient(180deg,rgba(20,21,32,.6),rgba(11,11,20,.7))}
+.final::before{content:"";position:absolute;inset:0;z-index:-1;
+  background:radial-gradient(60% 120% at 50% 0%,rgba(124,108,255,.3),transparent 70%),
+            radial-gradient(50% 120% at 80% 100%,rgba(255,138,91,.2),transparent 70%)}
+.final h2{font-size:clamp(2.1rem,4.6vw,3.4rem);max-width:16ch;margin:0 auto 18px}
+.final p{color:var(--muted);font-size:1.1rem;max-width:480px;margin:0 auto 34px}
+
+/* ---------- footer ---------- */
+footer{border-top:1px solid var(--glass-brd);padding:56px 0 40px;margin-top:40px}
+.foot-top{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap;margin-bottom:46px}
+.foot-brand{max-width:300px}
+.foot-brand p{color:var(--muted);font-size:.92rem;margin-top:14px}
+.foot-cols{display:flex;gap:64px;flex-wrap:wrap}
+.foot-col h4{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:16px}
+.foot-col a{display:block;color:var(--muted);font-size:.92rem;margin-bottom:11px;transition:.25s}
+.foot-col a:hover{color:var(--text)}
+.foot-bottom{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;padding-top:26px;border-top:1px solid var(--glass-brd);
+  font-size:.84rem;color:var(--faint)}
+.foot-bottom .credit{color:var(--muted)}
+.foot-bottom .credit a{color:var(--text);font-weight:600;border-bottom:1px solid var(--glass-brd2)}
+.foot-bottom .credit a:hover{border-color:var(--aqua)}
+
+/* ---------- reveal ---------- */
+.reveal{opacity:0;transform:translateY(24px);transition:.8s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+
+/* ---------- responsive ---------- */
+@media(max-width:920px){
+  .bento{grid-template-columns:repeat(2,1fr)}
+  .card.lg,.card.sm,.card.feat{grid-column:span 1}
+  .steps{grid-template-columns:1fr;gap:14px} .step:not(:last-child)::after{content:"↓";right:auto;left:50%;top:auto;bottom:-13px;transform:translateX(-50%)}
+  .metrics{grid-template-columns:repeat(2,1fr);gap:34px 20px}
+  .tgrid{grid-template-columns:1fr}
+  .pgrid{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  .section{padding:72px 0}
+  .nav-links,.nav-cta .signin{display:none}
+  .burger{display:flex}
+  .mobile-menu{display:none;position:fixed;inset:74px 0 auto 0;background:rgba(7,7,12,.97);backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--glass-brd);padding:24px;z-index:49;flex-direction:column;gap:6px}
+  .mobile-menu.open{display:flex}
+  .mobile-menu a{padding:13px 6px;color:var(--text);font-size:1.05rem;border-bottom:1px solid var(--glass-brd)}
+  .mobile-menu .btn{margin-top:14px;justify-content:center}
+  .console{transform:none} .console-wrap{perspective:none}
+  .bento{grid-template-columns:1fr}
+  .foot-cols{gap:36px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms!important;transition-duration:.001ms!important}
+  .reveal{opacity:1;transform:none}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+<div class="atmos"><div class="aurora"></div><div class="grid-overlay"></div><div class="grain"></div></div>
+
+<header id="hdr">
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="#top"><span class="mark"></span>Lumen</a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="nav-cta">
+        <a class="signin" href="#">Sign in</a>
+        <a class="btn btn-primary" href="#pricing">Start free</a>
+        <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+      </div>
+    </nav>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#features">Features</a><a href="#how">How it works</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a>
+    <a class="btn btn-primary" href="#pricing">Start free</a>
+  </div>
+</header>
+
+<main id="top">
+<!-- HERO -->
+<section class="hero wrap">
+  <span class="badge"><span class="pin">NEW</span> <b>Lumen 2.0</b> &nbsp;now answers in 12 languages</span>
+  <h1>Ask your data. <span class="grad-text">Get decisions.</span></h1>
+  <p class="sub">Lumen connects your marketing stack, watches every metric around the clock, and answers in plain English — with the next move already figured out.</p>
+  <div class="hero-cta">
+    <a class="btn btn-primary" href="#pricing">Start free <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="btn btn-ghost" href="#console">See it work</a>
+  </div>
+  <p class="hero-note">No credit card · 14-day trial · Connects in under 5 minutes</p>
+
+  <!-- SIGNATURE: live console -->
+  <div class="console-wrap reveal" id="console">
+    <div class="console">
+      <div class="console-bar">
+        <span class="dot" style="background:#FF5F57"></span><span class="dot" style="background:#FEBC2E"></span><span class="dot" style="background:#28C840"></span>
+        <span class="title">lumen — ask anything</span>
+        <span class="live">LIVE</span>
+      </div>
+      <div class="console-body">
+        <div class="thread" id="thread">
+          <div class="bubble ai">
+            <div class="who"><span class="lm"></span>Lumen</div>
+            Hi — I've synced your Google Ads, GA4 and revenue data. Ask me anything, or tap a question to start.
+          </div>
+        </div>
+        <div class="chips" id="chips"></div>
+      </div>
+      <form class="console-input" id="askForm" autocomplete="off">
+        <input id="askInput" placeholder="Ask about your revenue, channels, or budget…" aria-label="Ask Lumen a question" />
+        <button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- LOGO CLOUD -->
+<section class="cloud wrap reveal">
+  <p>Trusted by data teams at</p>
+  <div class="cloud-row">
+    <span>Northwind</span><span>Vela</span><span>Orbit&nbsp;Labs</span><span>Quanta</span><span>Beacon</span><span>Meridian</span>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section wrap" id="features">
+  <div class="sec-head reveal">
+    <span class="eyebrow">What it does</span>
+    <h2>An analyst that never sleeps, never guesses.</h2>
+    <p>Lumen reads every number the moment it changes, so you get answers — not another dashboard to maintain.</p>
+  </div>
+  <div class="bento">
+    <div class="card feat reveal">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="9"/></svg></div>
+      <h3>Decisions, not dashboards</h3>
+      <p>Every answer ships with a recommended next move and the projected impact — so you act, not just look.</p>
+      <div class="minibars" id="minibars"><i style="height:30%"></i><i style="height:55%"></i><i style="height:40%"></i><i style="height:72%"></i><i style="height:60%"></i><i style="height:90%"></i></div>
+    </div>
+    <div class="card sm reveal">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 21l-4.3-4.3M11 19a8 8 0 110-16 8 8 0 010 16z"/></svg></div>
+      <h3>Ask anything</h3>
+      <p>Plain-English questions across all your sources. No SQL, no formulas.</p>
+    </div>
+    <div class="card sm reveal">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 00-7 7c0 3 2 5 2 7h10c0-2 2-4 2-7a7 7 0 00-7-7zM9 21h6"/></svg></div>
+      <h3>Always watching</h3>
+      <p>Anomaly alerts land before a dip ever shows up in a report.</p>
+    </div>
+    <div class="card sm reveal">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
+      <h3>Connects everything</h3>
+      <p>Google Ads, GA4, CRM, Sheets, BigQuery — live in minutes.</p>
+    </div>
+    <div class="card lg reveal">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v4H4zM4 12h16M4 12v8M20 12v8M4 20h16"/></svg></div>
+      <h3>Reports that write themselves</h3>
+      <p>Scheduled, narrated summaries delivered to your inbox or Slack — already explained, so the meeting starts at the decision.</p>
+    </div>
+    <div class="card sm reveal">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg></div>
+      <h3>Your data stays yours</h3>
+      <p>Encrypted, access-scoped, never used to train anything.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section wrap" id="how">
+  <div class="sec-head reveal">
+    <span class="eyebrow">How it works</span>
+    <h2>Three steps from messy to clear.</h2>
+  </div>
+  <div class="steps">
+    <div class="step reveal"><div class="n">STEP 01</div><h3>Connect your sources</h3><p>Securely link your ad platforms, analytics, and spreadsheets. Lumen models them into one clean source of truth.</p></div>
+    <div class="step reveal"><div class="n">STEP 02</div><h3>Ask in plain English</h3><p>Type a question like you'd ask a teammate. Lumen reads everything and replies with the answer and the reasoning.</p></div>
+    <div class="step reveal"><div class="n">STEP 03</div><h3>Act on the move</h3><p>Each answer comes with a recommended action and projected impact. Approve it, and Lumen tracks the result.</p></div>
+  </div>
+</section>
+
+<!-- METRICS -->
+<section class="wrap reveal">
+  <div class="metrics">
+    <div class="metric"><div class="v" data-count="4.2" data-suffix="h">0</div><div class="l">saved per analyst, weekly</div></div>
+    <div class="metric"><div class="v" data-count="120" data-suffix="M+">0</div><div class="l">data points modeled daily</div></div>
+    <div class="metric"><div class="v" data-count="38" data-suffix="%">0</div><div class="l">faster decisions</div></div>
+    <div class="metric"><div class="v" data-count="99.9" data-suffix="%">0</div><div class="l">platform uptime</div></div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section wrap" id="loved">
+  <div class="sec-head reveal">
+    <span class="eyebrow">Loved by operators</span>
+    <h2>The report nobody dreads anymore.</h2>
+  </div>
+  <div class="tgrid">
+    <div class="tcard reveal"><div class="stars">★★★★★</div><p>"We cancelled our Monday reporting call. Lumen sends the narrative before anyone's even awake — and it's right."</p><div class="who"><div class="av">RK</div><div><b>Riya Kapoor</b><span>Head of Growth, Vela</span></div></div></div>
+    <div class="tcard reveal"><div class="stars">★★★★★</div><p>"It caught a 22% mobile conversion drop two days before we would have. That alert paid for the whole year."</p><div class="who"><div class="av">DM</div><div><b>Daniel Mercer</b><span>Performance Lead, Orbit Labs</span></div></div></div>
+    <div class="tcard reveal"><div class="stars">★★★★★</div><p>"I'm not technical, and that's the point. I ask Lumen a question and get an answer I can take to the board."</p><div class="who"><div class="av">SA</div><div><b>Sofia Alvarez</b><span>CMO, Beacon</span></div></div></div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section wrap" id="pricing">
+  <div class="sec-head reveal" style="text-align:center;margin-left:auto;margin-right:auto">
+    <span class="eyebrow" style="justify-content:center">Pricing</span>
+    <h2>Start free. Scale when it pays for itself.</h2>
+  </div>
+  <div class="toggle reveal" id="toggle">
+    <span class="on" id="lblM">Monthly</span>
+    <span class="sw" id="sw" role="switch" tabindex="0" aria-label="Toggle annual pricing"></span>
+    <span class="muted" id="lblY">Annual</span>
+    <span class="save">2 months free</span>
+  </div>
+  <div class="pgrid">
+    <div class="plan reveal">
+      <div class="tier">Starter</div>
+      <div class="price"><span data-m="0" data-y="0">$0</span><small>/mo</small></div>
+      <div class="pd">For solo analysts kicking the tyres.</div>
+      <ul>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>2 connected sources</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>50 questions / month</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>Weekly email summary</li>
+      </ul>
+      <a class="btn btn-ghost" href="#">Get started</a>
+    </div>
+    <div class="plan pop reveal">
+      <div class="pop-tag">MOST POPULAR</div>
+      <div class="tier">Growth</div>
+      <div class="price"><span data-m="49" data-y="39">$49</span><small>/mo</small></div>
+      <div class="pd">For teams who run on the numbers.</div>
+      <ul>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>Unlimited sources</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>Unlimited questions</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>Real-time anomaly alerts</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>Slack + scheduled reports</li>
+      </ul>
+      <a class="btn btn-primary" href="#">Start free trial</a>
+    </div>
+    <div class="plan reveal">
+      <div class="tier">Scale</div>
+      <div class="price"><span data-m="149" data-y="124">$149</span><small>/mo</small></div>
+      <div class="pd">For orgs that need control and SSO.</div>
+      <ul>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>Everything in Growth</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>SSO + role permissions</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>Dedicated success manager</li>
+      </ul>
+      <a class="btn btn-ghost" href="#">Contact sales</a>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section wrap" id="faq">
+  <div class="sec-head reveal" style="text-align:center;margin-left:auto;margin-right:auto">
+    <span class="eyebrow" style="justify-content:center">FAQ</span>
+    <h2>Good questions, straight answers.</h2>
+  </div>
+  <div class="faq reveal">
+    <details class="qa"><summary>How long does setup take?<span class="pm">+</span></summary><div class="ans">Most teams are connected in under five minutes. You authorise your sources, Lumen models them automatically, and you can ask your first question right away.</div></details>
+    <details class="qa"><summary>Do I need to know SQL or formulas?<span class="pm">+</span></summary><div class="ans">No. That's the whole point. You ask in plain English and Lumen handles the querying, joining, and math behind the scenes.</div></details>
+    <details class="qa"><summary>Is my data safe?<span class="pm">+</span></summary><div class="ans">Your data is encrypted in transit and at rest, access is scoped per user, and it's never used to train shared models. Your numbers stay yours.</div></details>
+    <details class="qa"><summary>Which tools does Lumen connect to?<span class="pm">+</span></summary><div class="ans">Google Ads, GA4, Google Search Console, most major CRMs, Google Sheets, and BigQuery today — with more added every month.</div></details>
+    <details class="qa"><summary>Can I cancel anytime?<span class="pm">+</span></summary><div class="ans">Yes. There are no lock-in contracts on monthly plans — cancel in one click and you keep access through the end of your billing period.</div></details>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="section wrap">
+  <div class="final reveal">
+    <h2>Stop building reports by hand.</h2>
+    <p>Connect your data and ask your first question in the next five minutes.</p>
+    <div class="hero-cta" style="justify-content:center">
+      <a class="btn btn-primary" href="#">Start free <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="btn btn-ghost" href="#console">See it work</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <a class="logo" href="#top"><span class="mark"></span>Lumen</a>
+        <p>The AI analyst that turns messy data into decisions — not dashboards.</p>
+      </div>
+      <div class="foot-cols">
+        <div class="foot-col"><h4>Product</h4><a href="#features">Features</a><a href="#how">How it works</a><a href="#pricing">Pricing</a><a href="#console">Live demo</a></div>
+        <div class="foot-col"><h4>Company</h4><a href="#">About</a><a href="#">Careers</a><a href="#">Blog</a><a href="#">Contact</a></div>
+        <div class="foot-col"><h4>Legal</h4><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Security</a></div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Lumen. A concept product — designed &amp; built as a front-end demo.</span>
+      <span class="credit">Designed &amp; built by <a href="https://debashishkumarbora.github.io" target="_blank" rel="noopener">Debashish Kumar Bora →</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* nav scrolled state */
+  var hdr=document.getElementById("hdr");
+  var onScroll=function(){ hdr.classList.toggle("scrolled", window.scrollY>20); };
+  onScroll(); window.addEventListener("scroll",onScroll,{passive:true});
+
+  /* mobile menu */
+  var burger=document.getElementById("burger"), mm=document.getElementById("mobileMenu");
+  burger.addEventListener("click",function(){
+    var open=mm.classList.toggle("open");
+    burger.setAttribute("aria-expanded",open);
+  });
+  mm.querySelectorAll("a").forEach(function(a){a.addEventListener("click",function(){mm.classList.remove("open");burger.setAttribute("aria-expanded",false);});});
+
+  /* reveal on scroll */
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+  },{threshold:.12});
+  document.querySelectorAll(".reveal").forEach(function(el){io.observe(el);});
+
+  /* count-up metrics */
+  var mio=new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(!e.isIntersecting) return;
+      var el=e.target, target=parseFloat(el.dataset.count), suf=el.dataset.suffix||"", dec=(target%1!==0)?1:0;
+      if(reduce){ el.textContent=target.toFixed(dec)+suf; mio.unobserve(el); return; }
+      var start=0, t0=null, dur=1400;
+      var step=function(ts){ if(!t0)t0=ts; var p=Math.min((ts-t0)/dur,1); var v=(target-start)*(1-Math.pow(1-p,3))+start;
+        el.textContent=v.toFixed(dec)+suf; if(p<1)requestAnimationFrame(step); };
+      requestAnimationFrame(step); mio.unobserve(el);
+    });
+  },{threshold:.5});
+  document.querySelectorAll(".metric .v").forEach(function(el){mio.observe(el);});
+
+  /* animate mini bars when seen */
+  var bio=new IntersectionObserver(function(es){es.forEach(function(e){ if(e.isIntersecting){
+    e.target.querySelectorAll("i").forEach(function(b){var h=b.style.height; b.style.height="0%"; requestAnimationFrame(function(){requestAnimationFrame(function(){b.style.height=h;});});});
+    bio.unobserve(e.target);} });},{threshold:.5});
+  var mb=document.getElementById("minibars"); if(mb)bio.observe(mb);
+
+  /* pricing toggle */
+  var tog=document.getElementById("toggle"), sw=document.getElementById("sw"),
+      lblM=document.getElementById("lblM"), lblY=document.getElementById("lblY");
+  var setYear=function(yr){
+    tog.classList.toggle("year",yr);
+    lblM.className=yr?"muted":"on"; lblY.className=yr?"on":"muted";
+    document.querySelectorAll(".price span[data-m]").forEach(function(s){
+      var v=yr?s.dataset.y:s.dataset.m; s.textContent="$"+v;
+    });
+  };
+  var toggleYr=function(){ setYear(!tog.classList.contains("year")); };
+  sw.addEventListener("click",toggleYr);
+  sw.addEventListener("keydown",function(e){ if(e.key===" "||e.key==="Enter"){e.preventDefault();toggleYr();}});
+
+  /* ---------- interactive console ---------- */
+  var QA=[
+    { q:"Why did revenue dip in Q3?",
+      a:"Revenue fell 8% in Q3, and it's almost entirely one cause: paid-search conversions on mobile dropped 22% while desktop held flat. The slide started the week the \"Brand — Exact\" campaign was paused.",
+      data:[62,60,58,49,46,44,47], rec:"Re-enable Brand — Exact. Projected recovery: ~£18K / month." },
+    { q:"Which channel has the best ROAS?",
+      a:"Email leads at 6.4x ROAS, well ahead of paid social at 2.1x. Paid search sits in the middle at 3.8x but drives 5x the volume of email, so it's still your workhorse.",
+      data:[21,38,38,38,64,64,64], rec:"Move 10% of paid-social budget into email automation." },
+    { q:"Where am I wasting budget?",
+      a:"£4,200 a month is going to 14 keywords with zero conversions in the last 90 days. Three of them alone account for 60% of that spend.",
+      data:[40,42,41,43,42,44,42], rec:"Pause the 3 worst keywords to reclaim ~£2,500 / month." }
+  ];
+  var thread=document.getElementById("thread"), chipsBox=document.getElementById("chips"),
+      form=document.getElementById("askForm"), input=document.getElementById("askInput");
+  var busy=false;
+
+  QA.forEach(function(item){
+    var c=document.createElement("button"); c.className="chip"; c.type="button"; c.textContent=item.q;
+    c.addEventListener("click",function(){ ask(item); });
+    chipsBox.appendChild(c);
+  });
+
+  function spark(data){
+    var w=240,h=46,max=Math.max.apply(null,data),min=Math.min.apply(null,data),rng=(max-min)||1;
+    var pts=data.map(function(d,i){ var x=(i/(data.length-1))*w; var y=h-((d-min)/rng)*(h-8)-4; return x.toFixed(1)+","+y.toFixed(1);});
+    var last=pts[pts.length-1].split(",");
+    return '<div class="spark"><div class="lab">Trend · last 7 periods</div>'+
+      '<svg viewBox="0 0 '+w+' '+h+'" width="100%" height="46" preserveAspectRatio="none">'+
+      '<defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7C6CFF" stop-opacity=".4"/><stop offset="1" stop-color="#7C6CFF" stop-opacity="0"/></linearGradient></defs>'+
+      '<polyline points="0,'+h+' '+pts.join(" ")+' '+w+','+h+'" fill="url(#sg)" stroke="none"/>'+
+      '<polyline points="'+pts.join(" ")+'" fill="none" stroke="#4FD7E8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'+
+      '<circle cx="'+last[0]+'" cy="'+last[1]+'" r="3" fill="#FF8A5B"/></svg></div>';
+  }
+
+  function bubble(cls,html){ var b=document.createElement("div"); b.className="bubble "+cls; b.innerHTML=html; thread.appendChild(b); return b; }
+
+  function ask(item){
+    if(busy) return; busy=true;
+    chipsBox.style.opacity=".4"; chipsBox.style.pointerEvents="none";
+    bubble("user", item.q);
+    var ai=bubble("ai",'<div class="who"><span class="lm"></span>Lumen</div><span class="ans-txt cursor-blink"></span>');
+    var txtEl=ai.querySelector(".ans-txt");
+    ai.scrollIntoView({behavior:reduce?"auto":"smooth",block:"nearest"});
+
+    var finish=function(){
+      txtEl.classList.remove("cursor-blink");
+      var extra=document.createElement("div"); extra.innerHTML=spark(item.data)+
+        '<div class="rec"><span class="tag">Do this</span><span>'+item.rec+'</span></div>';
+      ai.appendChild(extra.firstChild); ai.appendChild(extra.firstChild);
+      busy=false; chipsBox.style.opacity="1"; chipsBox.style.pointerEvents="auto";
+      ai.scrollIntoView({behavior:reduce?"auto":"smooth",block:"nearest"});
+    };
+
+    if(reduce){ txtEl.textContent=item.a; finish(); return; }
+    var i=0, txt=item.a;
+    var tick=function(){
+      txtEl.textContent=txt.slice(0,i); i++;
+      if(i<=txt.length){ setTimeout(tick, txt[i-1]===" "?12:18); } else { finish(); }
+    };
+    setTimeout(tick,260);
+  }
+
+  form.addEventListener("submit",function(e){
+    e.preventDefault();
+    var v=(input.value||"").toLowerCase().trim(); if(!v||busy) return;
+    var match=QA.find(function(it){
+      return (v.indexOf("revenue")>=0&&it.q.indexOf("revenue")>=0) ||
+             (v.indexOf("roas")>=0||v.indexOf("channel")>=0)&&it.q.indexOf("ROAS")>=0 ||
+             (v.indexOf("wast")>=0||v.indexOf("budget")>=0||v.indexOf("save")>=0)&&it.q.indexOf("wasting")>=0;
+    }) || QA[0];
+    input.value="";
+    ask({q:e.submitter?input.placeholder:v||match.q, a:match.a, data:match.data, rec:match.rec, q:match.q});
+  });
+})();
+</script>
+</body>
+</html>
