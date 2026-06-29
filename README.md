@@ -22,7 +22,4 @@ A premium, single-file landing page for **Lumen**, a concept "AI data analyst" p
 ## Run locally
 Open `index.html` in any browser. That's it.
 
-## Deploy (free, GitHub Pages)
-1. Create a public repo (e.g. `lumen-ai`) and upload `index.html`, `README.md`, `preview.png`.
-2. **Settings → Pages → Source:** `main` / `root` → **Save**.
-3. Live in ~1 minute at the URL above.
+
